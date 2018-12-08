@@ -7,13 +7,17 @@ public class DBmain {
 			Scanner in = new Scanner(System.in);
 			Connection conSQL = null;
 		try {
-			String sqlStatement = in.nextLine(); 
+			//String sqlStatement = in.nextLine(); 
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
 			//hp-hotel-cs475.cmlcsxc7y1gz.us-west-2.rds.amazonaws.com
 			//user:petra password: petra
 			//jdbc:mysql://localhost:3306/
-			conSQL = DriverManager.getConnection("jdbc:mysql://hp-hotel-cs475.cmlcsxc7y1gz.us-west-2.rds.amazonaws.com/", "petra", "petra");
-			Statement stmt=conSQL.createStatement();
+			conSQL = DriverManager.getConnection("jdbc:mysql://localhost:3306", "root", "root");
+			MainMenu mainMen = new MainMenu();
+			mainMen.run(conSQL);
+			
+			
+			/*Statement stmt=conSQL.createStatement();
 			stmt.execute("USE HOTEL");
 			PreparedStatement ps = conSQL.prepareStatement(sqlStatement);
 			boolean psEx = ps.execute();
@@ -36,7 +40,7 @@ public class DBmain {
 				System.out.println();
 			}
             in.nextLine();
-            
+           */ 
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			if(conSQL != null)
