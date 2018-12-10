@@ -17,7 +17,7 @@ public class EmployeeManagement extends MainMenu {
         fCurrentSelection = 0;
     }
 
-    public void run(Scanner in)
+    public void run(Scanner in, QueryProcessor qp)
     {
 
         do {
