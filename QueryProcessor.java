@@ -12,6 +12,10 @@ public class QueryProcessor {
 	public QueryProcessor() {
 		fSQLConnection = null;
 	}
+
+	public Connection getConnection() {
+		return fSQLConnection;
+	}
 	
 	@SuppressWarnings("deprecation")
 	public void initializeConnection() throws SQLException, Exception {

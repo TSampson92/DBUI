@@ -20,4 +20,6 @@ public interface SQLConstants {
 	public String VALUES = "VALUES";
 	public String INSERT = "INSERT";
 	public String INTO = "INTO";
+	public String UPDATE = "UPDATE";
+	public String SET = "SET";
 }
