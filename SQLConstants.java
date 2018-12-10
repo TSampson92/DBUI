@@ -16,4 +16,8 @@ public interface SQLConstants {
 	public String NOT_IN = "NOT IN";
 	public String EXISTS = "EXISTS";
 	public String NOT_EXISTS = "NOT EXISTS";
+	public String DELETE = "DELETE";
+	public String VALUES = "VALUES";
+	public String INSERT = "INSERT";
+	public String INTO = "INTO";
 }
