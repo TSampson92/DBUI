@@ -3,7 +3,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
 
-public class EmployeeManagement extends MainMenu {
+public class EmployeeManagement extends MainMenu implements SQLConstants {
     private int fCurrentSelection;
 
     private void outputMenu()
@@ -103,8 +103,8 @@ public class EmployeeManagement extends MainMenu {
                 LastName + " " + E_ID + " " + Manager_ID + " " +
                 Address + " " + E_Position + " " + Salary);
 
-        String sqlString = "INSERT INTO EMPLOYEE " +
-                "VALUES ( \'" + FirstName + "\', \'" + LastName + "\', \'" +
+        String sqlString = INSERT + " " + INTO + " EMPLOYEE " +
+                VALUES +"( \'" + FirstName + "\', \'" + LastName + "\', \'" +
                 E_ID + "\', \'" + Manager_ID + "\', \'" + Address + "\', \'" +
                 E_Position + "\', " + Salary + ", " +  Dep_ID + ")";
 
@@ -120,8 +120,8 @@ public class EmployeeManagement extends MainMenu {
         System.out.println("enter the employee's ID");
 
         String E_ID = in.nextLine();
-        String sqlString = "DELETE FROM EMPLOYEE " +
-                    "WHERE E_ID = " + E_ID;
+        String sqlString = DELETE + " " + FROM  + " EMPLOYEE " +
+                    WHERE + " E_ID = " + E_ID;
         qp.processQuery(sqlString);
     }
 
