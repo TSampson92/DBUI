@@ -1,6 +1,8 @@
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class EmployeeManagement extends MainMenu implements SQLConstants {
@@ -89,12 +91,8 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("* Position:");
         E_Position = in.nextLine();
 
-        try {
-            System.out.println("Salary:");
-            Salary = Double.parseDouble(in.nextLine());
-        } catch (NumberFormatException e) {
-            fCurrentSelection = 0;
-        }
+        System.out.println("Salary:");
+        Salary = in.nextDouble();
 
         System.out.println("Department ID:");
         Dep_ID = in.nextInt();
@@ -134,16 +132,135 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("enter the employee's ID");
 
         String E_ID = in.nextLine();
+
+        System.out.println("enter the new salary");
+
         Double salary = in.nextDouble();
 
-        String sqlString = "UPDATE EMPLOYEE SET Salary = " + salary +
-                    " WHERE E_ID = " + E_ID;
+        String sqlString = UPDATE + " EMPLOYEE " + SET + " Salary = " + salary +
+                    " " + WHERE + " E_ID = " + E_ID;
         qp.processQuery(sqlString);
     }
 
-    private void updateEmployeeInfo(Scanner in, QueryProcessor conn)
+    private void updateEmployeeInfo(Scanner in, QueryProcessor qp)
     {
+        System.out.println("Update employee personal information. If you want a field to stay the same, ");
+        System.out.println("press Enter at the appropriate prompt.");
+        System.out.println("To set a field to \'N\\A\' or \'no value\' status, type NULL");
+        System.out.println("Warning: First name, Last name, and Position cannot be set to \'N\\A\' or \'no value\'.");
+        System.out.println("Warning: Employee number cannot be changed.");
 
+        boolean firstNameChanged = false;
+        boolean lastNameChanged = false;
+        boolean addressChanged = false;
+        boolean positionChanged = false;
+        boolean deptExists = false;
+
+        System.out.println("Enter ID of the employee to update:");
+        String E_ID = in.nextLine();
+
+        System.out.println("Enter the new information:");
+        System.out.println("First name:");
+        String FirstName = in.nextLine();
+
+        System.out.println("Last name:");
+        String LastName = in.nextLine();
+
+        System.out.println("Address:");
+        String Address = in.nextLine();
+
+        System.out.println("Position:");
+        String E_Position = in.nextLine();
+
+        // manager ID will change based on department
+        System.out.println("Department ID:");
+        int Dep_ID = 0;
+        try {
+            Dep_ID = Integer.parseInt(in.nextLine());
+        } catch (NumberFormatException | NoSuchElementException e) {
+            // invalid, value, don't change the current value
+            Dep_ID = -1;
+            deptExists = true; }
+
+        String sqlString = UPDATE + " EMPLOYEE " + SET;
+        if(!FirstName.equals("")) {
+            sqlString += " FirstName = \'" + FirstName + "\'";
+            firstNameChanged = true;
+        }
+        if(!LastName.equals("")) {
+            if(firstNameChanged){
+                sqlString += ",";
+            }
+            sqlString += " LastName = \'" + LastName + "\'";
+            lastNameChanged = true;
+        }
+        if(!Address.equals("")) {
+            if(firstNameChanged || lastNameChanged) {
+                sqlString += ",";
+            }
+            if(Address.equals("NULL")){
+                sqlString += " Address = \'\'";
+            } else {
+                sqlString += " Address = \'" + Address + "\'";
+            }
+            addressChanged = true;
+        }
+        if(!E_Position.equals("")) {
+            if(firstNameChanged || lastNameChanged || addressChanged) {
+                sqlString += ",";
+            }
+            sqlString += " E_Position = \'" + E_Position + "\'";
+            positionChanged = true;
+        }
+        if(Dep_ID != 0 || Dep_ID != -1) {
+            // check that department exists
+            // should have method in QP that returns ResultSet
+            Statement stmt = null;
+            String deptExistsQuery = SELECT + " Dep_ID " + FROM + " DEPARTMENT";
+
+            try{
+                stmt = qp.getConnection().createStatement();
+                ResultSet rs = stmt.executeQuery(deptExistsQuery);
+
+                // search through result set
+                while(rs.next()) {
+                    int depID = rs.getInt("Dep_ID");
+                    if(depID == Dep_ID) {
+                        deptExists = true;
+                        break;
+                    }
+                }
+                if(!deptExists) {
+                    return;
+                }
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+
+            if(firstNameChanged || lastNameChanged || addressChanged || positionChanged) {
+                sqlString += ",";
+            }
+            sqlString += " Dep_ID = " + Dep_ID;
+        }
+
+        if(!deptExists) {
+            // illegal attempt to change dept number to a non-existing department
+            System.out.println("Department doesn't exist.");
+            System.out.println("Operation terminated");
+            return;
+        }
+
+        sqlString += " " + WHERE + " E_ID = " + E_ID;
+
+        if(FirstName == "NULL" || LastName == "NULL" || E_Position == "NULL")
+        {
+            System.out.println("First name, Last name, and Position cannot be set to \'N\\A\' or \'no value\'.");
+            System.out.println("Operation terminated");
+            return;
+        }
+
+        qp.processQuery(sqlString);
     }
 
 }
