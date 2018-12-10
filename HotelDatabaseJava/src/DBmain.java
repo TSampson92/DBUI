@@ -4,22 +4,22 @@ import java.util.Scanner;
 public class DBmain {
 	@SuppressWarnings("deprecation")
 	public static void main (String[] args) throws SQLException {
-			Scanner in = new Scanner(System.in);
+			//Scanner in = new Scanner(System.in);
 			Connection conSQL = null;
+
 		try {
-			String sqlStatement = in.nextLine(); 
+			//String sqlStatement = in.nextLine();
 			Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
-			//hp-hotel-cs475.cmlcsxc7y1gz.us-west-2.rds.amazonaws.com
-			//user:petra password: petra
-			//jdbc:mysql://localhost:3306/
-			conSQL = DriverManager.getConnection("jdbc:mysql://hp-hotel-cs475.cmlcsxc7y1gz.us-west-2.rds.amazonaws.com/", "petra", "petra");
+			conSQL = DriverManager.getConnection("jdbc:mysql://vergil.u.washington.edu:5555/HOTEL", "petra", "petra1");
 			Statement stmt=conSQL.createStatement();
 			stmt.execute("USE HOTEL");
+			/*
 			PreparedStatement ps = conSQL.prepareStatement(sqlStatement);
 			boolean psEx = ps.execute();
 			ResultSet rs = null;
 			if (psEx)
 				rs = ps.getResultSet();
+
 			ResultSetMetaData meta = rs.getMetaData();
 			int numberOfColumns = meta.getColumnCount();
 			System.out.println("Number of Columns: " + numberOfColumns);
@@ -35,7 +35,10 @@ public class DBmain {
 				System.out.print('|');
 				System.out.println();
 			}
-            in.nextLine();
+			*/
+            //in.close();
+			MainMenu mainMenu = new MainMenu();
+			mainMenu.run(conSQL);
             
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
