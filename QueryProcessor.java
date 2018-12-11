@@ -58,6 +58,7 @@ public class QueryProcessor {
 		ResultSetMetaData meta = rs.getMetaData();
 		int numberOfColumns = meta.getColumnCount();
 		//System.out.println("Number of Columns: " + numberOfColumns);
+		System.out.println("");
 		for (int i = 1; i <= numberOfColumns; i++) {
 			String columnType = meta.getColumnTypeName(i);
 			//System.out.print(columnType + " ");

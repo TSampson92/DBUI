@@ -42,8 +42,7 @@ public class MainMenu {
 			else if (fCurrentSelection == 2)
 				eManage.run(in,qp);
 			else if (fCurrentSelection == 3)
-				System.out.println("Hotel management");
-				//hManage.run();
+				hManage.run(in,qp);
 			else if(fDebugMenu && fCurrentSelection == 4)
 				doTheDebug(in,qp);
 			else if (fCurrentSelection > 3 || fCurrentSelection == 0 || fCurrentSelection < -1)
