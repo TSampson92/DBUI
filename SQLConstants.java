@@ -22,4 +22,5 @@ public interface SQLConstants {
 	public String INTO = "INTO";
 	public String UPDATE = "UPDATE";
 	public String SET = "SET";
+	public String IS_NULL = "IS NULL";
 }

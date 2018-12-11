@@ -1,4 +1,3 @@
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -15,7 +14,8 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("\t2. Terminate an employee contract");
         System.out.println("\t3. Manage employee salary");
         System.out.println("\t4. Update an employee information");
-        System.out.println("\t5. Display employee information");
+        System.out.println("\t5. Promote an employee to a manager of a department");
+        System.out.println("\t6. Display employee information");
         System.out.println("Please make a selection. Enter -1 to return to the Main Menu:");
     }
 
@@ -54,9 +54,13 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             }
             else if (fCurrentSelection == 5) {
                 System.out.println("DISPLAY EMPLOYEE INFORMATION");
+                promoteEmployee(in, qp);
+            }
+            else if (fCurrentSelection == 6) {
+                System.out.println("DISPLAY EMPLOYEE INFORMATION");
                 displayInfo(in, qp);
             }
-            
+
             if (fCurrentSelection > 5 || fCurrentSelection == 0)
                 System.out.println("Your input was incorrect! Please try again.");
 
@@ -154,6 +158,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("press Enter at the appropriate prompt.");
         System.out.println("To set a field to \'N\\A\' or \'no value\' status, type NULL");
         System.out.println("Warning: First name, Last name, and Position cannot be set to \'N\\A\' or \'no value\'.");
+        System.out.println("Warning: The system will report error if now fields are changed.");
         System.out.println("Warning: Employee number cannot be changed.");
 
         boolean firstNameChanged = false;
@@ -253,6 +258,13 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             sqlString += " Manager_ID = \'" + depHead + "\'";
         }
 
+        if(Dep_ID == -1) {
+            if (!firstNameChanged && !lastNameChanged && !addressChanged && !positionChanged) {
+                System.out.println("No values were changed.");
+                return;
+            }
+        }
+
         if(!deptExists) {
             // illegal attempt to change dept number to a non-existing department
             System.out.println("Department doesn't exist.");
@@ -273,9 +285,69 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("Employee information updated \n");
     }
 
+    private void promoteEmployee(Scanner in, QueryProcessor qp){
+        System.out.println("Enter ID of the employee to promote:");
+        String E_ID = in.nextLine();
+
+        System.out.println("Position:");
+        String E_Position = in.nextLine();
+
+        boolean deptExists = false;
+        System.out.println("Department ID:");
+        int Dep_ID = 0;
+        try {
+            Dep_ID = Integer.parseInt(in.nextLine());
+        } catch (NumberFormatException | NoSuchElementException e) {
+            // no value was entered, department exists, value doesn't change
+            Dep_ID = -1;
+            deptExists = true; }
+
+        if(Dep_ID != -1) {
+            // check that department with the requested ID exists
+            Statement stmt = null;
+            String deptExistsQuery = SELECT + " Dep_ID " + FROM + " DEPARTMENT";
+            String depHead = "";
+
+            try{
+                ResultSet rs = qp.processForResultSet(deptExistsQuery);
+
+                // search through result set
+                while(rs.next()) {
+                    int depID = rs.getInt("Dep_ID");
+                    if(depID == Dep_ID) {
+                        deptExists = true;
+                        break;
+                    }
+                }
+                if(!deptExists) {
+                    // illegal attempt to change dept number to a non-existing department
+                    System.out.println("Department doesn't exist.");
+                    System.out.println("Operation terminated");
+                    return;
+                }
+
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+        if(!deptExists) {
+            // illegal attempt to change dept number to a non-existing department
+            System.out.println("Department doesn't exist.");
+            System.out.println("Operation terminated\n");
+            return;
+        }
+
+        String sqlString = UPDATE + " EMPLOYEE " + SET + " Position = \'" +  E_Position +
+                "\', Manager_ID = \'00000\' " + WHERE + " E_ID = " + E_ID;
+
+        System.out.println("Employee number " + E_ID + " promoted to a manager. Congratulations!\n");
+
+    }
+
     private void displayInfo(Scanner in, QueryProcessor qp)
     {
-        DisplayInfo display = new DisplayInfo();
+        DisplayEmployeeInfo display = new DisplayEmployeeInfo();
         display.run(in, qp);
     }
 }

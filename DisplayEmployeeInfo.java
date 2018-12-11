@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class DisplayInfo extends EmployeeManagement implements SQLConstants {
+public class DisplayEmployeeInfo extends EmployeeManagement implements SQLConstants {
     private int fCurrentSelection;
 
     public void DisplayInfo(){ fCurrentSelection = 0; }
@@ -9,7 +9,7 @@ public class DisplayInfo extends EmployeeManagement implements SQLConstants {
         System.out.println("\t1. Choose to display the information about General Manager"); // could add a short bio :D
         System.out.println("\t2. Choose to list all department managers");
         System.out.println("\t3. Choose to list all employees");
-        System.out.println("\t4. Choose to displa the list of employees in a particular departmnet");
+        System.out.println("\t4. Choose to display the list of employees in a particular department");
         System.out.println("\t5. Choose to display information about an individual employee");
         System.out.println("\t6. Choose to list all employees holding a particular job title");
         System.out.println("Please make a selection. Enter -1 to exit:");
@@ -45,7 +45,10 @@ public class DisplayInfo extends EmployeeManagement implements SQLConstants {
     }
 
     private void displayCeo(QueryProcessor qp) {
-
+        System.out.println("The general manager:");
+        String sqlString = SELECT + " LastName, FirstName " + FROM + " EMPLOYEE " +
+                WHERE + " Manager_ID " +  IS_NULL;
+        qp.processQuery(sqlString);
     }
 
     private void displayManagers(QueryProcessor qp){
