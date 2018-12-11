@@ -12,7 +12,7 @@ public class DisplayInfo extends EmployeeManagement implements SQLConstants {
         System.out.println("\t4. Choose to displa the list of employees in a particular departmnet");
         System.out.println("\t5. Choose to display information about an individual employee");
         System.out.println("\t6. Choose to list all employees holding a particular job title");
-        System.out.println("Please make a selection. Enter -1 to exit:\n");
+        System.out.println("Please make a selection. Enter -1 to exit:");
     }
 
     public void run(Scanner in, QueryProcessor qp) {
@@ -53,7 +53,8 @@ public class DisplayInfo extends EmployeeManagement implements SQLConstants {
     }
 
     private void displayAll(QueryProcessor qp){
-
+        String sqlString = SELECT +  " LastName, FirstName " + FROM + " EMPLOYEE";
+        qp.processQuery(sqlString);
     }
 
     private void displayByDepartment(Scanner in, QueryProcessor qp) {
