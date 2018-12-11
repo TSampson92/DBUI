@@ -47,7 +47,7 @@ public class DisplayEmployeeInfo extends EmployeeManagement implements SQLConsta
     private void displayCeo(QueryProcessor qp) {
         System.out.println("The general manager:");
         String sqlString = SELECT + " LastName, FirstName " + FROM + " EMPLOYEE " +
-                WHERE + " Manager_ID " +  IS_NULL;
+                WHERE + " Manager_ID " + IS_NULL;
         qp.processQuery(sqlString);
     }
 
