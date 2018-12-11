@@ -222,8 +222,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             String depHead = "";
 
             try{
-                stmt = qp.getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery(deptExistsQuery);
+                ResultSet rs = qp.processForResultSet(deptExistsQuery);
 
                 // search through result set
                 while(rs.next()) {
