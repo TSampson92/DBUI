@@ -12,10 +12,6 @@ public class QueryProcessor {
 	public QueryProcessor() {
 		fSQLConnection = null;
 	}
-
-	public Connection getConnection() {
-		return fSQLConnection;
-	}
 	
 	@SuppressWarnings("deprecation")
 	public void initializeConnection() throws SQLException, Exception {
@@ -26,6 +22,25 @@ public class QueryProcessor {
 		Statement DBSelectStmt = fSQLConnection.createStatement();
 		DBSelectStmt.execute("USE HOTEL");
 		//Connection should be open and ready for statements sent from the menus
+	}
+	
+	public ResultSet processForResultSet(String sqlStatement) {
+		ResultSet rs = null;
+		try {
+			PreparedStatement ps = fSQLConnection.prepareStatement(sqlStatement);
+			boolean resultsReturned = ps.execute();
+			if (resultsReturned)
+				rs = ps.getResultSet();
+			else {
+				System.out.println("No results returned");
+				return rs;
+			}
+		} catch (SQLException sqlE) {
+			System.out.println("Error processing the sql statement: " + sqlE.getMessage());
+			return rs;
+		}
+		 
+		return rs;
 	}
 	
 	public void processQuery(String sqlStatement) {
@@ -42,15 +57,25 @@ public class QueryProcessor {
 		
 		ResultSetMetaData meta = rs.getMetaData();
 		int numberOfColumns = meta.getColumnCount();
-		System.out.println("Number of Columns: " + numberOfColumns);
+		//System.out.println("Number of Columns: " + numberOfColumns);
 		for (int i = 1; i <= numberOfColumns; i++) {
-			System.out.print('|' + meta.getColumnName(i));
+			String columnType = meta.getColumnTypeName(i);
+			//System.out.print(columnType + " ");
+			if (columnType.equals("VARCHAR"))
+				System.out.printf("|%-5s", meta.getColumnName(i));
+			else
+				System.out.printf("|%s",meta.getColumnName(i));
+			
 		}
 		System.out.print('|');
 		System.out.println();
 		while (rs.next() != false) {
 			for (int i = 1; i <= numberOfColumns; i++ ) {
-				System.out.print('|' + rs.getString(meta.getColumnName(i)));
+				String columnType = meta.getColumnTypeName(i);
+				if (columnType.equals("VARCHAR"))
+					System.out.printf("|%-5s", rs.getString(i));
+				else
+					System.out.printf("|%5s",rs.getString(i));
 			}
 			System.out.print('|');
 			System.out.println();

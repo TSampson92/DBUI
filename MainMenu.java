@@ -53,7 +53,7 @@ public class MainMenu {
 		} while(fCurrentSelection != -1);
 
 
-		System.out.println("Thank you for using the Hollows Hotel Management System!");
+		System.out.println("Thank you for using the Hallows Hotel Management System!");
 
 
 	}
