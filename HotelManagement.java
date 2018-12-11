@@ -59,36 +59,118 @@ public class HotelManagement extends MainMenu implements SQLConstants {
 			
 			System.out.print("Enter the name of the Department: ");
 			depName = in.nextLine();
-			System.out.print("Enter a department ID: ");
+			if (depName.equals("")) {
+				System.out.println("A department name is needed. Returning to Hotel Management menu.");
+				return;
+			}
+			System.out.print("Enter a department ID. ID must be a positive integer value: ");
 			try {
 				depID = Integer.parseInt(in.nextLine());
 			} catch (NumberFormatException e) {
-				System.out.print("Department ID must be a positive integer value: ");
-				depID = Integer.parseInt(in.nextLine());
+				System.out.print("Department ID must be a positive integer value returning to Hotel Management menu. ");
+				return;
 			}
 			
 			System.out.print("Enter a manager ID that corresponds to a current employee ID: ");
 			depHead = in.nextLine();
+			if (depHead.equals("")) {
+				System.out.println("A manager ID must be entered. Returning to Hotel Management menu.");
+				return;
+				
+			}
 			
-			String sql = INSERT + " " +  INTO + " " + DEPARTMENT + " " + VALUES + "('" + depName + "', " + depID + ", " + 1 + ", '" + depHead + "')";
+			String sql = INSERT + " " +  INTO + " " + DEPARTMENT + " " + VALUES + "('" + depName + "', " + depID + ", " + 1 + ", '" + depHead + "');";
 			qp.processQuery(sql);
 			
 			return;
 		}
 		
 		private void assignDepartmentToRoom(Scanner in, QueryProcessor qp) {
-			return;
+			int department = 0;
+			int room = 0;
+			int choice = 0;
+			System.out.println("Select a type of room to assign a department to:");
+			System.out.println("\t1. Guest Room");
+			System.out.println("\t2. Conference Room");
+			try {
+				choice = Integer.parseInt(in.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("The choice has to be either 1 or 2. Returning to Hotel Management menu.");
+				return;
+			}
+			if (choice != 1 && choice != 2) {
+				System.out.println("Choice has to be either 1 or 2. Returning to Hotel management menu.");
+				return;
+			}
+				
+			System.out.print("Please enter a room number. This will fail if the room does not exists: ");
+			try {
+				room = Integer.parseInt(in.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Room number must be a positive integer value. Returning to Hotel Management menu.");
+				return;
+			}
+			
+			System.out.print("Please enter a department number. This will fail if the department number does not exist: ");
+			try {
+				department = Integer.parseInt(in.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("Room number must be a positive integer value. Returning to Hotel Management menu.");
+				return;
+			}
+			
+			if (choice == 1) {
+				String sql = INSERT + " " + INTO + " " + DEPARTMENT_SERVICES_GUEST + " " + VALUES + "(" + department + ", " + room + ");";
+				qp.processQuery(sql);
+			} else {
+				String sql = INSERT + " " + INTO + " " + DEPARTMENT_SERVICES_CONFERENCE + " " + VALUES + "(" + department + ", " + room + ");";
+				qp.processQuery(sql);
+			}
+				
 		}
-		
+			
+			
 		private void printDepartmentInfo(Scanner in, QueryProcessor qp) {
+			System.out.print("Enter a department to get the info from: ");
+			String department = in.nextLine();
+			String sql = SELECT + " * " + FROM + " " + DEPARTMENT + " " + WHERE + " " + DEPARTMENT +".Dep_Name='" + department + "';"; 
+			qp.processQuery(sql);
 			return;
 		}
 		
 		private void printEmployeesInDepartment(Scanner in, QueryProcessor qp) {
+			System.out.print("Enter a department to get the employees from: ");
+			String department = in.nextLine();
+			String sql = SELECT + " e.LastName, e.FirstName, d.Dep_Name " + FROM + " " + EMPLOYEE + " e " + JOIN + " " + DEPARTMENT + " d " 
+															 + ON + " d.DEP_ID=e.Dep_ID " + WHERE + " d.Dep_name='" + department + "';" ;
+			qp.processQuery(sql);
 			return;
 		}
 		
 		private void printRoomsServicedByDepartment(Scanner in, QueryProcessor qp) {
+			int choice = 0;
+			System.out.println("Select a type of room to search:");
+			System.out.println("\t1. Guest Room");
+			System.out.println("\t2. Conference Room");
+			try {
+				choice = Integer.parseInt(in.nextLine());
+			} catch (NumberFormatException e) {
+				System.out.println("The choice has to be either 1 or 2. Returning to Hotel Management menu.");
+				return;
+			}
+			System.out.print("Enter a department to find the rooms it services: ");
+			String department = in.nextLine();
+			
+			if (choice == 1) {
+				String sql = SELECT + " DSGR.G_Room_Num, D.Dep_name " + FROM + " " + DEPARTMENT_SERVICES_GUEST + " DSGR " + JOIN + " " + DEPARTMENT
+																	 + " D " + ON + " DSGR.Dep_ID=D.Dep_ID " + WHERE + " D.Dep_name='" + department + "';";
+				qp.processQuery(sql);
+			} else {
+				String sql = SELECT + " DSCR.C_Room_Num, D.Dep_name " + FROM + " " + DEPARTMENT_SERVICES_CONFERENCE + " DSCR " + JOIN + " " + DEPARTMENT
+						 + " D " + ON + " DSCR.Dep_ID=D.Dep_ID " + WHERE + " D.Dep_name='" + department + "';";
+				qp.processQuery(sql);
+			}
+			
 			return;
 		}
 		
