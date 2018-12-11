@@ -10,10 +10,12 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
 
     private void outputMenu()
     {
+        System.out.println("EMPLOYEE INFORMATION MENU");
         System.out.println("\t1. Hire a new employee");
         System.out.println("\t2. Terminate an employee contract");
         System.out.println("\t3. Manage employee salary");
-        System.out.println("\t4. Update en employee information");
+        System.out.println("\t4. Update an employee information");
+        System.out.println("\t5. Display employee information");
         System.out.println("Please make a selection. Enter -1 to return to the Main Menu:");
     }
 
@@ -35,23 +37,27 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             }
 
             if (fCurrentSelection == 1) {
-                System.out.println("Hiring:");
+                System.out.println("HIRING:");
                 hire(in, qp);
             }
             else if (fCurrentSelection == 2) {
-                System.out.println("Firing:");
+                System.out.println("FIRING:");
                 fire(in, qp);
             }
             else if (fCurrentSelection == 3) {
-                System.out.println("Updating salary:");
+                System.out.println("UPDATING SALARY:");
                 changeSalary(in, qp);
             }
             else if (fCurrentSelection == 4) {
-                System.out.println("Updating personal information:");
+                System.out.println("UPDATING EMPLOYEE INFORMATION:");
                 updateEmployeeInfo(in, qp);
             }
-
-            if (fCurrentSelection > 4 || fCurrentSelection == 0)
+            else if (fCurrentSelection == 5) {
+                System.out.println("DISPLAY EMPLOYEE INFORMATION");
+                displayInfo(in, qp);
+            }
+            
+            if (fCurrentSelection > 5 || fCurrentSelection == 0)
                 System.out.println("Your input was incorrect! Please try again.");
 
         } while(fCurrentSelection != -1);
@@ -172,22 +178,21 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("Position:");
         String E_Position = in.nextLine();
 
-        // manager ID will change based on department
         System.out.println("Department ID:");
         int Dep_ID = 0;
         try {
             Dep_ID = Integer.parseInt(in.nextLine());
         } catch (NumberFormatException | NoSuchElementException e) {
-            // nova value was entered, don't change the current value
+            // no value was entered, department exists, value doesn't change
             Dep_ID = -1;
             deptExists = true; }
 
         String sqlString = UPDATE + " EMPLOYEE " + SET;
-        if(!FirstName.equals("")) {
+        if(!FirstName.equals("") && !FirstName.equals("NULL")) {
             sqlString += " FirstName = \'" + FirstName + "\'";
             firstNameChanged = true;
         }
-        if(!LastName.equals("")) {
+        if(!LastName.equals("") && !LastName.equals("NULL")) {
             if(firstNameChanged){
                 sqlString += ",";
             }
@@ -205,22 +210,21 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             }
             addressChanged = true;
         }
-        if(!E_Position.equals("")) {
+        if(!E_Position.equals("") && !E_Position.equals("NULL")) {
             if(firstNameChanged || lastNameChanged || addressChanged) {
                 sqlString += ",";
             }
             sqlString += " E_Position = \'" + E_Position + "\'";
             positionChanged = true;
         }
-        if(Dep_ID != 0 || Dep_ID != -1) {
+        if(Dep_ID != -1) {
             // check that department with the requested ID exists
             Statement stmt = null;
             String deptExistsQuery = SELECT + " Dep_ID, Dep_Head " + FROM + " DEPARTMENT";
             String depHead = "";
 
             try{
-                stmt = qp.getConnection().createStatement();
-                ResultSet rs = stmt.executeQuery(deptExistsQuery);
+                ResultSet rs = qp.processForResultSet(deptExistsQuery);
 
                 // search through result set
                 while(rs.next()) {
@@ -232,6 +236,9 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                     }
                 }
                 if(!deptExists) {
+                    // illegal attempt to change dept number to a non-existing department
+                    System.out.println("Department doesn't exist.");
+                    System.out.println("Operation terminated");
                     return;
                 }
 
@@ -249,7 +256,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         if(!deptExists) {
             // illegal attempt to change dept number to a non-existing department
             System.out.println("Department doesn't exist.");
-            System.out.println("Operation terminated");
+            System.out.println("Operation terminated\n");
             return;
         }
 
@@ -263,6 +270,12 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         }
 
         qp.processQuery(sqlString);
+        System.out.println("Employee information updated \n");
     }
 
+    private void displayInfo(Scanner in, QueryProcessor qp)
+    {
+        DisplayInfo display = new DisplayInfo();
+        display.run(in, qp);
+    }
 }
