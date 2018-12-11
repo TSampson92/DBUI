@@ -10,10 +10,12 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
 
     private void outputMenu()
     {
+        System.out.println("EMPLOYEE INFORMATION MENU");
         System.out.println("\t1. Hire a new employee");
         System.out.println("\t2. Terminate an employee contract");
         System.out.println("\t3. Manage employee salary");
-        System.out.println("\t4. Update en employee information");
+        System.out.println("\t4. Update an employee information");
+        System.out.println("\t5. Display employee information");
         System.out.println("Please make a selection. Enter -1 to return to the Main Menu:");
     }
 
@@ -51,7 +53,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 updateEmployeeInfo(in, qp);
             }
             else if (fCurrentSelection == 5) {
-                System.out.println("DISPLAY EMLOYEE INFORMATION");
+                System.out.println("DISPLAY EMPLOYEE INFORMATION");
                 displayInfo(in, qp);
             }
 
