@@ -54,6 +54,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             }
             else if (fCurrentSelection == 5) {
                 System.out.println("DISPLAY EMPLOYEE INFORMATION");
+
                 displayInfo(in, qp);
             }
 
