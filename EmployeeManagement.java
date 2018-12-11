@@ -111,7 +111,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 LastName + " " + E_ID + " " + Manager_ID + " " +
                 Address + " " + E_Position + " " + Salary);
 
-        String sqlString = INSERT + " " + INTO + " EMPLOYEE " +
+        String sqlString = INSERT + " " + INTO + " " + EMPLOYEE + " " +
                 VALUES +"( \'" + FirstName + "\', \'" + LastName + "\', \'" +
                 E_ID + "\', \'" + Manager_ID + "\', \'" + Address + "\', \'" +
                 E_Position + "\', " + Salary + ", " +  Dep_ID + ")";
@@ -128,7 +128,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("enter the employee's ID");
 
         String E_ID = in.nextLine();
-        String sqlString = DELETE + " " + FROM  + " EMPLOYEE " +
+        String sqlString = DELETE + " " + FROM  + " " + EMPLOYEE + " " +
                     WHERE + " E_ID = " + E_ID;
         qp.processQuery(sqlString);
     }
@@ -147,7 +147,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
 
         Double salary = in.nextDouble();
 
-        String sqlString = UPDATE + " EMPLOYEE " + SET + " Salary = " + salary +
+        String sqlString = UPDATE + " " + EMPLOYEE + " " + SET + " Salary = " + salary +
                     " " + WHERE + " E_ID = " + E_ID;
         qp.processQuery(sqlString);
     }
@@ -192,7 +192,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             Dep_ID = -1;
             deptExists = true; }
 
-        String sqlString = UPDATE + " EMPLOYEE " + SET;
+        String sqlString = UPDATE + " " + EMPLOYEE + " " + SET;
         if(!FirstName.equals("") && !FirstName.equals("NULL")) {
             sqlString += " FirstName = \'" + FirstName + "\'";
             firstNameChanged = true;
@@ -225,7 +225,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         if(Dep_ID != -1) {
             // check that department with the requested ID exists
             Statement stmt = null;
-            String deptExistsQuery = SELECT + " Dep_ID, Dep_Head " + FROM + " DEPARTMENT";
+            String deptExistsQuery = SELECT + " Dep_ID, Dep_Head " + FROM + " " + DEPARTMENT;
             String depHead = "";
 
             try{
@@ -305,7 +305,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         if(Dep_ID != -1) {
             // check that department with the requested ID exists
             Statement stmt = null;
-            String deptExistsQuery = SELECT + " Dep_ID " + FROM + " DEPARTMENT";
+            String deptExistsQuery = SELECT + " Dep_ID " + FROM + " " + DEPARTMENT;
             String depHead = "";
 
             try{
@@ -338,11 +338,10 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             return;
         }
 
-        String sqlString = UPDATE + " EMPLOYEE " + SET + " Position = \'" +  E_Position +
+        String sqlString = UPDATE + " " + EMPLOYEE + " " + SET + " E_Position = \'" +  E_Position +
                 "\', Manager_ID = \'00000\' " + WHERE + " E_ID = " + E_ID;
-
+        qp.processQuery(sqlString);
         System.out.println("Employee number " + E_ID + " promoted to a manager. Congratulations!\n");
-
     }
 
     private void displayInfo(Scanner in, QueryProcessor qp)
