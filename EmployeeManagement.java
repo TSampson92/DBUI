@@ -178,7 +178,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         try {
             Dep_ID = Integer.parseInt(in.nextLine());
         } catch (NumberFormatException | NoSuchElementException e) {
-            // invalid, value, don't change the current value
+            // nova value was entered, don't change the current value
             Dep_ID = -1;
             deptExists = true; }
 
@@ -213,10 +213,10 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             positionChanged = true;
         }
         if(Dep_ID != 0 || Dep_ID != -1) {
-            // check that department exists
-            // should have method in QP that returns ResultSet
+            // check that department with the requested ID exists
             Statement stmt = null;
-            String deptExistsQuery = SELECT + " Dep_ID " + FROM + " DEPARTMENT";
+            String deptExistsQuery = SELECT + " Dep_ID, Dep_Head " + FROM + " DEPARTMENT";
+            String depHead = "";
 
             try{
                 stmt = qp.getConnection().createStatement();
@@ -225,6 +225,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 // search through result set
                 while(rs.next()) {
                     int depID = rs.getInt("Dep_ID");
+                    depHead = rs.getString("Dep_Head");
                     if(depID == Dep_ID) {
                         deptExists = true;
                         break;
@@ -241,7 +242,8 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
             if(firstNameChanged || lastNameChanged || addressChanged || positionChanged) {
                 sqlString += ",";
             }
-            sqlString += " Dep_ID = " + Dep_ID;
+            sqlString += " Dep_ID = " + Dep_ID + ", ";
+            sqlString += " Manager_ID = \'" + depHead + "\'";
         }
 
         if(!deptExists) {
