@@ -17,6 +17,8 @@ public class GuestManagement extends MainMenu implements SQLConstants {
 		System.out.println("\t1. Create a reservation for a new guest");
 		System.out.println("\t2. List guest contact information");
 		System.out.println("\t3. List all guests in alphabetical order");
+		System.out.println("\t4. List all guests staying at the hotel on a particular date");
+		System.out.println("\t5. List all guests arriving on a particular date");
 		System.out.println("Please make a selection. Enter -1 to return to the Main Menu:");
 	}
 	
@@ -47,7 +49,7 @@ public class GuestManagement extends MainMenu implements SQLConstants {
 			} else if (fCurrentSelection == 4) {
 				System.out.println("LISTING ALL GUEST WITH RESERVATION FOR DATE:");
 				listGuestsStayingOnDate(in, qp);
-			} else if (fCurrentSelection == 4) {
+			} else if (fCurrentSelection == 5) {
 				System.out.println("LIST ALL GUEST ARRIVING ON DATE:");
 				listGuestsArrivingOnDate(in, qp);
 			}
@@ -236,19 +238,46 @@ public class GuestManagement extends MainMenu implements SQLConstants {
 	}
 
 	private void listContactInfo(Scanner in, QueryProcessor qp){
-
+		System.out.println("Enter a guest name:");
+		String name = in.nextLine();
+		String sqlString = SELECT + " Email, Phone_num, Address " + FROM + " " +
+				GUEST + " " + WHERE + " G_name = \'" + name + "\'";
+		qp.processQuery(sqlString);
+		System.out.println();
 	}
 
 	private void listAllGuests(QueryProcessor qp){
-
+		String sqlString = SELECT + " G_name, Email, Phone_num " + FROM + " "
+				+ GUEST + " " + ORDER_BY + " G_name";
+		qp.processQuery(sqlString);
+		System.out.println();
 	}
 
 	private void listGuestsStayingOnDate(Scanner in, QueryProcessor qp){
-
+		try {
+			System.out.println("Enter date in DD-MM-YYYY format");
+			String date = in.nextLine();
+			String sqlDate = date.substring(6) + date.substring(2, 6) + date.substring(0, 2);
+			String sqlString = SELECT + " G_name " + FROM + " " + GUEST_RESERVATION + " " +
+					" " + WHERE + " Start_Date <= \'" + sqlDate + "\' AND End_Date >= " +
+					"\'" + sqlDate + "\'";
+			qp.processQuery(sqlString);
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println("Not a valid date");
+		}
 	}
 
 	private void listGuestsArrivingOnDate(Scanner in, QueryProcessor qp){
-		
+		try {
+			System.out.println("Enter date in DD-MM-YYYY format");
+			String date = in.nextLine();
+			String sqlDate = date.substring(6) + date.substring(2,6) + date.substring(0,2);
+			String sqlString = SELECT + " G_name " + FROM + " " + GUEST_RESERVATION + " " +
+					" " + WHERE + " Start_Date = \'" + sqlDate + "\'";
+			qp.processQuery(sqlString);
+		} catch (StringIndexOutOfBoundsException e) {
+			System.out.println("Not a valid date");
+		}
 	}
 	
 	private boolean guestHasReservation(String guestName, String guestEmail, QueryProcessor qp) {
