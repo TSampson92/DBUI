@@ -37,7 +37,7 @@ public class MainMenu {
 			}
 
 			if (fCurrentSelection == 1)
-				gManage.run();
+				gManage.run(in, qp);
 			else if (fCurrentSelection == 2)
 				eManage.run(in,qp);
 			else if (fCurrentSelection == 3)
