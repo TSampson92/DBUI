@@ -61,7 +61,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 displayInfo(in, qp);
             }
 
-            if (fCurrentSelection > 5 || fCurrentSelection == 0)
+            if (fCurrentSelection > 5 || fCurrentSelection == 0 || fCurrentSelection < -1)
                 System.out.println("Your input was incorrect! Please try again.");
 
         } while(fCurrentSelection != -1);
