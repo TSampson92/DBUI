@@ -37,8 +37,7 @@ public class MainMenu {
 			}
 
 			if (fCurrentSelection == 1)
-				System.out.println("Guest management");
-				//gManage.run();
+				gManage.run();
 			else if (fCurrentSelection == 2)
 				eManage.run(in,qp);
 			else if (fCurrentSelection == 3)
