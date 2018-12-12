@@ -1,6 +1,3 @@
-import javafx.stage.Stage;
-
-import java.sql.Connection;
 import java.util.Scanner;
 
 public class MainMenu {
