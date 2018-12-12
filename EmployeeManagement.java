@@ -61,7 +61,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 displayInfo(in, qp);
             }
 
-            if (fCurrentSelection > 5 || fCurrentSelection == 0 || fCurrentSelection < -1)
+            if (fCurrentSelection > 6 || fCurrentSelection == 0 || fCurrentSelection < -1)
                 System.out.println("Your input was incorrect! Please try again.");
 
         } while(fCurrentSelection != -1);
@@ -75,12 +75,11 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         String FirstName = "";
         String LastName = "";
         String E_ID = "";       // this should be generated automatically
-        String Manager_ID = ""; // this should be generated automatically
+        String Manager_ID = ""; // generated based on department
         String Address = "";
         String E_Position = "";
-        Double Salary = 0.0;    // could be automatically set to the lowest value
-        // of the same position
-        int Dep_ID = 0;         // needs to be checked for existing values in DEPARTMENT
+        Double Salary = 0.0;    // could be automatically set to the lowest value based on position
+        int Dep_ID = 0;
 
         // check all for NULLS?
         System.out.println("* First name:");
@@ -92,9 +91,6 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("* Employee ID:");
         E_ID = in.nextLine();
 
-        System.out.println("Manger ID:");
-        Manager_ID = in.nextLine();
-
         System.out.println("Address:");
         Address = in.nextLine();
 
@@ -104,8 +100,54 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
         System.out.println("Salary:");
         Salary = in.nextDouble();
 
+        boolean deptExists = false;
         System.out.println("Department ID:");
-        Dep_ID = in.nextInt();
+        in.nextLine();
+        try {
+            Dep_ID = Integer.parseInt(in.nextLine());
+        } catch (NumberFormatException | NoSuchElementException e) {
+            Dep_ID = -1;
+        }
+
+        if(Dep_ID != -1) {
+            // check that department with the requested ID exists
+            String deptExistsQuery = SELECT + " Dep_ID, Dep_Head " + FROM + " " + DEPARTMENT;
+            String depHead = "";
+
+            try{
+                ResultSet rs = qp.processForResultSet(deptExistsQuery);
+
+                // search through result set
+                while(rs.next()) {
+                    int depID = rs.getInt("Dep_ID");
+                    depHead = rs.getString("Dep_Head");
+                    if(depID == Dep_ID) {
+                        deptExists = true;
+                        Manager_ID = depHead;
+                        break;
+                    }
+                }
+                if(!deptExists) {
+                    // illegal attempt to change dept number to a non-existing department
+                    System.out.println("Department doesn't exist.");
+                    System.out.println("Operation terminated");
+                    return;
+                }
+
+            } catch (SQLException e) {
+                // illegal attempt to change dept number to a non-existing department
+                System.out.println("Department doesn't exist.");
+                System.out.println("Operation terminated");
+                return;
+            }
+        }
+
+        if(!deptExists) {
+            // illegal attempt to change dept number to a non-existing department
+            System.out.println("Department doesn't exist.");
+            System.out.println("Operation terminated\n");
+            return;
+        }
 
         System.out.println("New EMPLOYEE: " + FirstName + " " +
                 LastName + " " + E_ID + " " + Manager_ID + " " +
@@ -117,7 +159,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
                 E_Position + "\', " + Salary + ", " +  Dep_ID + ")";
 
         qp.processQuery(sqlString);
-
+        System.out.println();
     }
 
     private void fire(Scanner in, QueryProcessor qp)
@@ -304,9 +346,7 @@ public class EmployeeManagement extends MainMenu implements SQLConstants {
 
         if(Dep_ID != -1) {
             // check that department with the requested ID exists
-            Statement stmt = null;
             String deptExistsQuery = SELECT + " Dep_ID " + FROM + " " + DEPARTMENT;
-            String depHead = "";
 
             try{
                 ResultSet rs = qp.processForResultSet(deptExistsQuery);
