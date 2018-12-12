@@ -52,7 +52,11 @@ public class DisplayEmployeeInfo extends EmployeeManagement implements SQLConsta
     }
 
     private void displayManagers(QueryProcessor qp){
-
+        System.out.println("The managers of the hotel departments:");
+        String sqlString = SELECT + " LastName, FirstName, Dep_Name " + FROM + " " +
+                EMPLOYEE + " " + JOIN + " " + DEPARTMENT + " " + ON +
+                " Dep_Head = E_ID";
+        qp.processQuery(sqlString);
     }
 
     private void displayAll(QueryProcessor qp){
@@ -61,14 +65,55 @@ public class DisplayEmployeeInfo extends EmployeeManagement implements SQLConsta
     }
 
     private void displayByDepartment(Scanner in, QueryProcessor qp) {
+        // TODO: should be able to list by EITHER dept name OR dept number
+        System.out.println("List employees in department:");
 
+        System.out.println("Enter a department name:");
+        String Dep_Name = in.nextLine();
+
+        String sqlString = SELECT + " LastName, FirstName " + FROM + " " + EMPLOYEE +
+                " AS E " + JOIN + " " + DEPARTMENT + " AS D " + ON + " E.Dep_ID = D.Dep_ID" +
+                " " + WHERE + " D.Dep_Name = \'" + Dep_Name + "\'";
+        qp.processQuery(sqlString);
     }
 
     private void displayByEmployee(Scanner in, QueryProcessor qp) {
+        System.out.println("\t1.  Search for an employee by E_ID");
+        System.out.println("\t2.  Search for an employee by first and last name");
 
+        int choice = in.nextInt();
+        in.nextLine();          // to avoid scanner skipping input after in.nextInt()
+        if(choice == 1){
+            System.out.println("\t\tEnter employee ID:");
+            String id = in.nextLine();
+            String sqlString = SELECT + " * " + FROM + " " + EMPLOYEE + " " +
+                    WHERE + " E_ID = \'" + id + "\'";
+            qp.processQuery(sqlString);
+            System.out.println();
+
+        } else if (choice == 2) {
+            System.out.println("\t\tEnter employee first name:");
+            String first = in.nextLine();
+            System.out.println("\t\tEnter employee last name:");
+            String last = in.nextLine();
+            String sqlString = SELECT + " * " + FROM + " " + EMPLOYEE + " " +
+                    WHERE + " FirstName = \'" + first + "\' AND LastName = \'" + last + "\'";
+            qp.processQuery(sqlString);
+            System.out.println();
+
+        } else {
+            System.out.println("Your input was incorrect! Please try again.");
+        }
     }
 
     private void displayByJobTitle(Scanner in, QueryProcessor qp) {
-        
+        // display all with a position
+        System.out.println("Enter job title:");
+        System.out.println("Warning: Capitalize the first letter of the input.");
+        String job = in.nextLine();
+        String sqlString = SELECT + " LastName, FirstName " + FROM + " " + EMPLOYEE + " " +
+                WHERE + " E_Position = \'" + job + "\'";
+        qp.processQuery(sqlString);
+        System.out.println();
     }
 }

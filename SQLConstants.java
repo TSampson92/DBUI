@@ -26,6 +26,7 @@ public interface SQLConstants {
 	public static String IS_NULL = "IS NULL";
 	public static String ON = "ON";
 	public static String DISTINCT = "DISTINCT";
+
 	
 	
 	//Tables 
