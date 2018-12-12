@@ -12,8 +12,6 @@ public class DBmain {
 
 			//String sqlStatement = in.nextLine();
 			MainMenu mainMenu = new MainMenu();
-			mainMenu.setDebug(true);
-			mainMenu.run(sqlProcessor);
-            
+			mainMenu.run(sqlProcessor);       
 	}
 }
