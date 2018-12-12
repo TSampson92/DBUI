@@ -1,10 +1,9 @@
 import java.io.FileReader;
-
 import java.util.Scanner;
 import java.io.FileNotFoundException;
 import java.sql.*;
 
-public class QueryProcessor {
+public class QueryProcessor implements SQLConstants {
 	
 	private Connection fSQLConnection;
 	private String[] fConnectionParams;
@@ -29,18 +28,24 @@ public class QueryProcessor {
 		try {
 			PreparedStatement ps = fSQLConnection.prepareStatement(sqlStatement);
 			boolean resultsReturned = ps.execute();
+			
 			if (resultsReturned)
 				rs = ps.getResultSet();
-			else {
-				System.out.println("No results returned");
+			boolean rows = rs.last();
+			if (rows) {
+				rs.beforeFirst();
+				return rs;
+			} else {
+				rs.close();
+				rs = null;
 				return rs;
 			}
+			
+			
 		} catch (SQLException sqlE) {
 			System.out.println("Error processing the sql statement: " + sqlE.getMessage());
 			return rs;
 		}
-		 
-		return rs;
 	}
 	
 	public void processQuery(String sqlStatement) {
@@ -48,12 +53,22 @@ public class QueryProcessor {
 		PreparedStatement ps = fSQLConnection.prepareStatement(sqlStatement);
 		boolean psExecuted = ps.execute();
 		ResultSet rs = null;
+		
 		if (psExecuted)
 			rs = ps.getResultSet();
 		else {
-			System.out.println("No results returned.");
+			System.out.println("An update or delete occured.");
 			return;
 		}
+		
+		boolean hasRows = rs.last();
+		if(!hasRows) {
+			System.out.println("No results returned.");
+			rs.close();
+			return;
+		}
+		
+		rs.beforeFirst();
 		
 		ResultSetMetaData meta = rs.getMetaData();
 		int numberOfColumns = meta.getColumnCount();
@@ -63,7 +78,7 @@ public class QueryProcessor {
 			String columnType = meta.getColumnTypeName(i);
 			//System.out.print(columnType + " ");
 			if (columnType.equals("VARCHAR"))
-				System.out.printf("|%-5s", meta.getColumnName(i));
+				System.out.printf("|%s", meta.getColumnName(i));
 			else
 				System.out.printf("|%s",meta.getColumnName(i));
 			
@@ -74,9 +89,9 @@ public class QueryProcessor {
 			for (int i = 1; i <= numberOfColumns; i++ ) {
 				String columnType = meta.getColumnTypeName(i);
 				if (columnType.equals("VARCHAR"))
-					System.out.printf("|%-5s", rs.getString(i));
+					System.out.printf("|%s", rs.getString(i));
 				else
-					System.out.printf("|%5s",rs.getString(i));
+					System.out.printf("|%s",rs.getString(i));
 			}
 			System.out.print('|');
 			System.out.println();
@@ -112,6 +127,26 @@ public class QueryProcessor {
 		return paramArray;
 	}
 	
-	
+	public int getCountFromTable(String TableName) {
+		int recordCount = 0;
+		String sql = SELECT + " COUNT(*) " + FROM + " " + TableName;
+		PreparedStatement ps = null;
+		try {
+			ps = fSQLConnection.prepareStatement(sql);
+			ps.execute();
+			ResultSet rs = ps.getResultSet();
+			rs.next();
+			recordCount = rs.getInt(1);
+			rs.close();
+			ps.close();
+			return recordCount;
+		} catch (SQLException e) {
+			System.out.println("Error during sql execution: " + e.getMessage());
+			return 0;
+		}
+		
+		
+		
+	}
 
 }
